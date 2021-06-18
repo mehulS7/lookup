@@ -104,7 +104,7 @@ def traversePosts(n,e):
 
 def extractElem(e):
     page = 1
-    time.sleep(2)
+    time.sleep(3)
     while(page):
         if page != 1:
             link = driver.current_url+'&page='+str(page)
@@ -204,6 +204,7 @@ try:
             elif date_posted == 'week':
                 posted_dt.find_elements_by_tag_name('li')[1].find_element_by_tag_name('p').click()
             posted_dt.find_elements_by_tag_name('button')[1].click()
+            driver.find_element_by_id('msg-overlay').find_elements_by_tag_name('button')[3].click()
         extractElem(e)
 except:
     print('Something went wrong.')
@@ -265,5 +266,5 @@ finally:
                 'db_username' : db_username, 'db_pass': db_pass,'db_server': db_server,'db_driver': db_driver, 'db_database': db_database,'db_trusted' : db_trusted ,'api_key' : api_key, 'chat_id':chat_id,
                 'saved_areas' : all_save}
                 with open('config.json','w') as f:
-                    json.dump(f,'config.json')
+                    json.dump(config_data,f)
                 print('\n-Config file saved.')
