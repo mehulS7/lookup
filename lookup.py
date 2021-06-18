@@ -70,40 +70,36 @@ def hitSearch(e):
 def extractInfo(e):
     global df
     try:
-        driver.switch_to.window(driver.window_handles[1])
         post_src = soup(driver.page_source,'html.parser')
-        if post_src.find('span',{'class' : 'break-words'}):
-            post_content = post_src.find('span',{'class' : 'break-words'}).text
+        section = post_src.find('section',{'class':'scaffold-layout__detail search-marvel-srp__content-detail-detail'})
+        if section.find('div',{'class':'feed-shared-update-v2__description-wrapper ember-view'}):
+            post_content = section.find('div',{'class':'feed-shared-update-v2__description-wrapper ember-view'}).text
         else:
             post_content = "**No Text Found**"
         clean_content = re.sub('\n|\xa0|\u200b',' ',post_content).strip()
-        post_title = post_src.find('span',{'dir':'ltr'}).text
-        section = driver.find_element_by_class_name('fixed-full')
-        top_bar = post_src.find('div',{'class': 'feed-shared-actor display-flex feed-shared-actor--with-control-menu'})
+        post_title = section.find('span',{'dir':'ltr'}).text
+        flex_catch = driver.find_element_by_class_name('search-marvel-srp__content-detail-item')
+        top_bar = section.find('div',{'class': 'feed-shared-actor display-flex feed-shared-actor--with-control-menu'})
         if top_bar.find('li-icon',{'class':{'artdeco-button__icon'}}):
-            section.find_elements_by_tag_name('button')[2].click()
+            flex_catch.find_elements_by_tag_name('button')[3].click()
         else:
-            section.find_elements_by_tag_name('button')[1].click()
+            flex_catch.find_elements_by_tag_name('button')[2].click()
         time.sleep(1)
-        flex_elem = section.find_element_by_class_name('artdeco-dropdown__content-inner')
+        flex_elem = flex_catch.find_element_by_class_name('artdeco-dropdown__content-inner')
         flex_elem.find_elements_by_tag_name('li')[1].click()
         post_link = pd.read_clipboard().columns.values[0]
         df = df.append({'Date' : current_dt, 'Search_Element': e ,'Title' : post_title, 'Content': clean_content, 'URL': post_link},ignore_index=True)
         print(f'Post: {df.shape[0]} extracted')
     except:
         print('Extraction failed due to slow speed.')
-    driver.close()
 
 
 def traversePosts(n,e):
     for i in range(1,n+1):
-        post = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,'//*[@id="main"]/div/div/div[2]/ul/li[' + str(i) + ']/div/div/div[2]/div[1]')))
-        post.click()
-        time.sleep(2)
-        if len(driver.window_handles) > 1:
-            time.sleep(4)
-            extractInfo(e)
-            driver.switch_to.window(driver.window_handles[0])
+        post = WebDriverWait(driver,10).until(EC.presence_of_element_located((By.XPATH,'//*[@id="search-marvel-srp-scroll-container"]/div/div[1]/ul/li[' + str(i) + ']')))
+        post.find_element_by_tag_name('div').click()
+        time.sleep(1)
+        extractInfo(e)
 
 
 def extractElem(e):
@@ -115,7 +111,7 @@ def extractElem(e):
             driver.get(link)
             time.sleep(3)
         pg_src = soup(driver.page_source,'html.parser')
-        n = len(pg_src.findAll('li',{'class':'reusable-search__result-container artdeco-card search-results__hide-divider mb2'}))
+        n = len(pg_src.findAll('li',{'class':'reusable-search__result-container'}))
         print(f'\nPosts: {n}\t\t||\t\tPage: {page}\t\t||\t\tSearch Element: "{e}"')
         if n!= 0:
             traversePosts(n,e)
