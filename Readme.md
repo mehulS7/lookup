@@ -9,4 +9,4 @@ In the end if you need to save the information, you can save it in a DataBase, E
 
 You don't need to enter all the information everytime you need to extract data. A config file will be created in the end containing all of the essential details.
 
-Have a look at lookup. It's working - https://drive.google.com/file/d/1D9D-MdiLwA6zKH2I8zkgTrqvfteje0EV/view?usp=sharing
+Have a look at lookup -> https://drive.google.com/file/d/1D9D-MdiLwA6zKH2I8zkgTrqvfteje0EV/view?usp=sharing
